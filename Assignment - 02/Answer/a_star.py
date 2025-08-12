@@ -8,9 +8,10 @@ def a_star_search(Grid, Sx, Sy, Dx, Dy):
     def heuristic(x, y):
         return math.sqrt((Dx - x) ** 2 + (Dy - y) ** 2)
 
-    g_score = [[float("inf")] * N for value in range(N)]
+    g_score = [[float("inf") for _ in range(N)] for _ in range(N)]
+    f_score = [[float("inf") for _ in range(N)] for _ in range(N)]
+
     g_score[Sx][Sy] = Grid[Sx][Sy]
-    f_score = [[float("inf")] * N for value in range(N)]
     f_score[Sx][Sy] = g_score[Sx][Sy] + heuristic(Sx, Sy)
 
     came_from = {}
