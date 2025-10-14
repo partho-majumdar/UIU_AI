@@ -17,7 +17,7 @@ st.set_page_config(
 @st.cache_resource
 def load_model():
     # Try the specific path you mentioned
-    model_path = "logreg_model.pkl"
+    model_path = "AI LAB Project/logreg_model.pkl"
 
     try:
         st.write(f"🔍 Looking for model at: {model_path}")
