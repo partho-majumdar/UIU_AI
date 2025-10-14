@@ -1,10 +1,10 @@
-import streamlit as st # type: ignore 
-import numpy as np # type: ignore 
+import streamlit as st
+import numpy as np
 import pickle
 import time
 import os
 
-
+# Set page config MUST be the first Streamlit command
 st.set_page_config(
     page_title="Term Deposit Predictor",
     page_icon="💰",
@@ -13,30 +13,60 @@ st.set_page_config(
 )
 
 
-# Load the model with error handling
+# Load the model with correct file path
 @st.cache_resource
 def load_model():
+    # Try the specific path you mentioned
+    model_path = "logreg_model.pkl"
+
     try:
-        with open("logreg_model.pkl", "rb") as f:
-            model = pickle.load(f)
-        return model
-    except FileNotFoundError:
-        st.error("❌ Model file 'logreg_model.pkl' not found!")
-        st.info(
-            "Please make sure you've uploaded the 'logreg_model.pkl' file to your GitHub repository along with this app.py file."
-        )
-        st.stop()
+        st.write(f"🔍 Looking for model at: {model_path}")
+        if os.path.exists(model_path):
+            st.write(f"✅ Found model file at: {model_path}")
+            with open(model_path, "rb") as f:
+                model = pickle.load(f)
+            st.success("🎉 Model loaded successfully!")
+            return model
+        else:
+            st.error(f"❌ File not found at: {model_path}")
+
+            # Show current directory structure for debugging
+            st.info("📁 Current directory structure:")
+            try:
+                current_dir = os.listdir(".")
+                st.write("Root directory contents:")
+                for item in current_dir:
+                    st.write(f" - {item}")
+
+                # Check if AI LAB Project folder exists
+                if os.path.exists("AI LAB Project"):
+                    st.write("📂 Contents of 'AI LAB Project' folder:")
+                    project_dir = os.listdir("AI LAB Project")
+                    for item in project_dir:
+                        st.write(f" - {item}")
+                else:
+                    st.write("❌ 'AI LAB Project' folder not found")
+
+            except Exception as e:
+                st.write(f"Could not list directory: {e}")
+
     except Exception as e:
         st.error(f"❌ Error loading model: {e}")
-        st.stop()
+
+    st.stop()
 
 
 # Load model
-model = load_model()
-weights = model["weights"]
-mean = model["mean"]
-std = model["std"]
-columns = model["columns"]
+try:
+    model = load_model()
+    weights = model["weights"]
+    mean = model["mean"]
+    std = model["std"]
+    columns = model["columns"]
+    st.success("✅ Model components loaded successfully!")
+except Exception as e:
+    st.error(f"❌ Error loading model components: {e}")
+    st.stop()
 
 
 def sigmoid(z):
@@ -48,6 +78,7 @@ def predict(X, weights, threshold=0.5):
     return np.array([1 if p >= threshold else 0 for p in probs])
 
 
+# Rest of your CSS and app code remains exactly the same...
 st.markdown(
     """
     <style>
@@ -432,14 +463,42 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# import streamlit as st
-# import numpy as np
+
+# import streamlit as st # type: ignore
+# import numpy as np # type: ignore
 # import pickle
 # import time
+# import os
 
-# with open("logreg_model.pkl", "rb") as f:
-#     model = pickle.load(f)
 
+# st.set_page_config(
+#     page_title="Term Deposit Predictor",
+#     page_icon="💰",
+#     layout="centered",
+#     initial_sidebar_state="collapsed",
+# )
+
+
+# # Load the model with error handling
+# @st.cache_resource
+# def load_model():
+#     try:
+#         with open("./logreg_model.pkl", "rb") as f:
+#             model = pickle.load(f)
+#         return model
+#     except FileNotFoundError:
+#         st.error("❌ Model file 'logreg_model.pkl' not found!")
+#         st.info(
+#             "Please make sure you've uploaded the 'logreg_model.pkl' file to your GitHub repository along with this app.py file."
+#         )
+#         st.stop()
+#     except Exception as e:
+#         st.error(f"❌ Error loading model: {e}")
+#         st.stop()
+
+
+# # Load model
+# model = load_model()
 # weights = model["weights"]
 # mean = model["mean"]
 # std = model["std"]
@@ -454,13 +513,6 @@ st.markdown(
 #     probs = sigmoid(X.dot(weights))
 #     return np.array([1 if p >= threshold else 0 for p in probs])
 
-
-# st.set_page_config(
-#     page_title="Term Deposit Predictor",
-#     page_icon="💰",
-#     layout="centered",
-#     initial_sidebar_state="collapsed",
-# )
 
 # st.markdown(
 #     """
@@ -629,7 +681,6 @@ st.markdown(
 #     unsafe_allow_html=True,
 # )
 
-
 # with st.container():
 #     st.markdown("### Enter Customer Details")
 
@@ -702,7 +753,6 @@ st.markdown(
 #             "", ["No", "Yes"], key="education", label_visibility="collapsed"
 #         )
 
-
 # user_input = np.array(
 #     [
 #         customer_age,
@@ -719,7 +769,6 @@ st.markdown(
 
 # X_new = (user_input - mean) / std
 # X_new = np.c_[np.ones(X_new.shape[0]), X_new]
-
 
 # if st.button("🔮 Predict Subscription"):
 #     with st.spinner("🤖 Analyzing customer data..."):
